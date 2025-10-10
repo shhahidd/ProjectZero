@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Never Gonna Give You Up 🎵</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: black;
+      overflow: hidden;
+      touch-action: manipulation; /* Improves mobile touch responsiveness */
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block; /* Ensures no extra spacing on mobile */
+    }
+    /* Overlay text to encourage a tap/click */
+    .click-hint {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      text-align: center;
+      pointer-events: none; /* Allows touches/clicks to pass through to video */
+      z-index: 1;
+      background: rgba(0, 0, 0, 0.5); /* Semi-transparent for readability */
+      padding: 20px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <video id="rickroll" loop muted playsinline>
+    <source src="RickRoll.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+  
+  <!-- Tap/click prompt that disappears after starting -->
+  <div class="click-hint" id="hint">Tap to start the surprise! 🎵</div>
+
+  <script>
+    const video = document.getElementById('rickroll');
+    const hint = document.getElementById('hint');
+    
+    // Function to start video and audio
+    function startVideo() {
+      video.muted = false; // Unmute
+      video.play().catch(error => {
+        console.log('Play prevented:', error); // Log for debugging
+      });
+      hint.style.display = 'none'; // Hide the hint
+      // Remove listeners after first trigger
+      video.removeEventListener('click', startVideo);
+      video.removeEventListener('touchstart', startVideo);
+    }
+    
+    // Add listeners to the VIDEO ELEMENT (better for mobile user gestures)
+    video.addEventListener('click', startVideo, { once: true });
+    video.addEventListener('touchstart', startVideo, { once: true, passive: true });
+    
+    // Fallback: Listen on document if video isn't directly tappable (rare)
+    document.addEventListener('click', startVideo, { once: true });
+    document.addEventListener('touchstart', startVideo, { once: true, passive: true });
+  </script>
+</body>
+</html>
