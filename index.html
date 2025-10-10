@@ -11,14 +11,15 @@
       height: 100%;
       background: black;
       overflow: hidden;
-      cursor: pointer; /* Hint that clicking does something */
+      touch-action: manipulation; /* Improves mobile touch responsiveness */
     }
     video {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      display: block; /* Ensures no extra spacing on mobile */
     }
-    /* Overlay text to encourage a click */
+    /* Overlay text to encourage a tap/click */
     .click-hint {
       position: absolute;
       top: 50%;
@@ -28,37 +29,46 @@
       font-family: Arial, sans-serif;
       font-size: 24px;
       text-align: center;
-      pointer-events: none; /* So clicks pass through to video/body */
+      pointer-events: none; /* Allows touches/clicks to pass through to video */
       z-index: 1;
-      background: rgba(0, 0, 0, 0.5); /* Semi-transparent background for readability */
+      background: rgba(0, 0, 0, 0.5); /* Semi-transparent for readability */
       padding: 20px;
       border-radius: 10px;
     }
   </style>
 </head>
 <body>
-  <video id="rickroll" loop muted controls playsinline>
+  <video id="rickroll" loop muted playsinline>
     <source src="RickRoll.mp4" type="video/mp4" />
     Your browser does not support the video tag.
   </video>
   
-  <!-- Click prompt that disappears after starting -->
-  <div class="click-hint" id="hint">Click To Start The Surprise</div>
+  <!-- Tap/click prompt that disappears after starting -->
+  <div class="click-hint" id="hint">Tap And See Whats Next?</div>
 
   <script>
     const video = document.getElementById('rickroll');
     const hint = document.getElementById('hint');
     
-    // Start video and audio on first click (user interaction)
-    document.addEventListener('click', function startVideo() {
-      video.muted = false; // Ensure unmuted
+    // Function to start video and audio
+    function startVideo() {
+      video.muted = false; // Unmute
       video.play().catch(error => {
-        console.log('Autoplay prevented:', error); // Fallback for strict browsers
+        console.log('Play prevented:', error); // Log for debugging
       });
       hint.style.display = 'none'; // Hide the hint
-      document.removeEventListener('click', startVideo); // One-time only
-    }, { once: true }); // Run only the first time
+      // Remove listeners after first trigger
+      video.removeEventListener('click', startVideo);
+      video.removeEventListener('touchstart', startVideo);
+    }
+    
+    // Add listeners to the VIDEO ELEMENT (better for mobile user gestures)
+    video.addEventListener('click', startVideo, { once: true });
+    video.addEventListener('touchstart', startVideo, { once: true, passive: true });
+    
+    // Fallback: Listen on document if video isn't directly tappable (rare)
+    document.addEventListener('click', startVideo, { once: true });
+    document.addEventListener('touchstart', startVideo, { once: true, passive: true });
   </script>
 </body>
 </html>
-
