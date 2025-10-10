@@ -11,19 +11,53 @@
       height: 100%;
       background: black;
       overflow: hidden;
+      cursor: pointer; /* Hint that clicking does something */
     }
     video {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
+    /* Overlay text to encourage a click */
+    .click-hint {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      text-align: center;
+      pointer-events: none; /* So clicks pass through to video/body */
+      z-index: 1;
+      background: rgba(0, 0, 0, 0.5); /* Semi-transparent background for readability */
+      padding: 20px;
+      border-radius: 10px;
+    }
   </style>
 </head>
 <body>
-  <video autoplay loop controls playsinline>
+  <video id="rickroll" loop muted controls playsinline>
     <source src="RickRoll.mp4" type="video/mp4" />
     Your browser does not support the video tag.
   </video>
+  
+  <!-- Click prompt that disappears after starting -->
+  <div class="click-hint" id="hint">Click to start the surprise! 🎵</div>
+
+  <script>
+    const video = document.getElementById('rickroll');
+    const hint = document.getElementById('hint');
+    
+    // Start video and audio on first click (user interaction)
+    document.addEventListener('click', function startVideo() {
+      video.muted = false; // Ensure unmuted
+      video.play().catch(error => {
+        console.log('Autoplay prevented:', error); // Fallback for strict browsers
+      });
+      hint.style.display = 'none'; // Hide the hint
+      document.removeEventListener('click', startVideo); // One-time only
+    }, { once: true }); // Run only the first time
+  </script>
 </body>
 </html>
-
